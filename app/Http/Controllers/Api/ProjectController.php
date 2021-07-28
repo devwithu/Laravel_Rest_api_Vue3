@@ -3,11 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectRequest;
+use App\Http\Resources\ProjectCollection;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Http\Resources\Project as ProjectResource;
 
 class ProjectController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Project::class, 'project');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,8 +22,12 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::all();
-        return $projects;
+        $projects = Project::where('user_id', auth()->user()->id)
+            //->select(['id', 'name', 'created_at', 'updated_at'])
+                -> withCount('tasks')
+            ->paginate();
+        //return $projects;
+        return new ProjectCollection($projects);
     }
 
     /**
@@ -25,9 +36,10 @@ class ProjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProjectRequest $request)
     {
-        //
+        $project =  auth()->user()->projects()->create($request->all());
+        return new ProjectResource($project);
     }
 
     /**
@@ -36,9 +48,11 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Project  $project)
     {
-        //
+        $tasks = $project->tasks;
+        //$project->tasks;
+        return new ProjectResource($project);
     }
 
     /**
@@ -48,9 +62,11 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProjectRequest $request, Project $project)
     {
-        //
+        $project->update($request->all());
+        $tasks = $project->tasks;
+        return new ProjectResource($project);
     }
 
     /**
@@ -59,8 +75,11 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
+        return [
+            'status' => 'OK'
+        ];
     }
 }
