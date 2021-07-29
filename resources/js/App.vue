@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col min-h-screen justify-between">
+    <div class="flex flex-col h-screen justify-between">
         <AppHeader></AppHeader>
-        <main class="flex flex-grow bg-blue-100">
+        <main class="flex-grow bg-blue-100">
             <router-view></router-view>
         </main>
         <app-footer></app-footer>
