@@ -30,3 +30,14 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('tasks', \App\Http\Controllers\Api\TaskController::class)->except(['index', 'show']);
     Route::post('upload', [\App\Http\Controllers\Api\FilesController::class, 'store']);
 });
+
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    $user = $request->user();
+    $user->tokens()->delete();
+    Auth::guard('web')->logout();
+    return ['status' => 'OK'];
+
+});
+
+
+
