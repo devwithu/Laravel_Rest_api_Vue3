@@ -6,18 +6,13 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 export default {
     name: "Dashboard",
-    data() {
-      return {
-          user: [],
-      }
-    },
-    mounted() {
-        axios.get('/api/user')
-        .then(res => {
-            this.user = res.data;
-        })
+    computed: {
+        ...mapGetters([
+            "user"
+        ])
     }
 }
 </script>

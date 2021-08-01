@@ -24,6 +24,7 @@
                         <label for="password" class="sr-only">Password</label>
                         <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
                     </div>
+                    <p v-if="errorMsg.length" class="text-red-500 text-xs italic">{{ errorMsg }}</p>
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -64,23 +65,26 @@ export default {
     data() {
         return {
             'email': '',
-            'password': ''
+            'password': '',
+            'errorMsg': ''
         }
     },
     methods: {
-        handlLogin() {
-            axios.get('/sanctum/csrf-cookie').then(response => {
-               axios.post('/api/authenticate', {
-                   email: this.email,
-                   password: this.password
-               })
-                .then(res => {
-                    this.$router.push({name: 'dashboard'})
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-            });
+        async handlLogin() {
+
+            this.errorMsg = '';
+
+            try {
+                await this.$store.dispatch('signIn', {
+                    email: this.email,
+                    password: this.password
+                });
+                this.$router.push({name: 'dashboard'});
+
+            } catch (e){
+                this.errorMsg = e;
+            }
+
         }
     }
 
