@@ -13,7 +13,7 @@
                     </a>
                 </p>
             </div>
-            <form @submit.prevent="handlLogin" class="mt-8 space-y-6" action="#" method="POST">
+            <form @submit.prevent="handlLogin()" class="mt-8 space-y-6" action="#" method="POST">
                 <input type="hidden" name="remember" value="true">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 export default {
     name: "Signin",
     data() {
@@ -68,6 +69,11 @@ export default {
             'password': '',
             'errorMsg': ''
         }
+    },
+    computed: {
+      ...mapGetters([
+          'authenticated'
+      ])
     },
     methods: {
         async handlLogin() {
@@ -79,12 +85,23 @@ export default {
                     email: this.email,
                     password: this.password
                 });
-                this.$router.push({name: 'dashboard'});
+                console.log('a');
+                await this.$router.push({name: 'dashboard'});
+                console.log('b');
 
             } catch (e){
                 this.errorMsg = e;
             }
 
+        }
+    },
+    mounted() {
+        console.log('before');
+        if (this.authenticated) {
+            console.log('auth');
+            this.$router.push({name: 'dashboard'});
+        } else {
+            console.log('not auth');
         }
     }
 

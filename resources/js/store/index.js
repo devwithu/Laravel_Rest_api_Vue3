@@ -23,7 +23,7 @@ const store = createStore({
         }
     },
     actions: {
-        async signIn({commit}, payload) {
+        async signIn({dispatch}, payload) {
             try {
                 await axios.get('/sanctum/csrf-cookie');
                 const res = await axios.post('/api/authenticate', payload);
@@ -31,20 +31,36 @@ const store = createStore({
                     throw res.message;
                 }
 
-                axios.get('/api/user')
-                    .then(res => {
-                        commit('setUser', res.data);
-                        commit('setAuthenticated', true);
-                    })
-                    .catch(() => {
-                        commit('setUser', null);
-                        commit('setAuthenticated', false);
-                    });
+                return dispatch('getUser');
 
             } catch (e) {
                 throw 'User can not be authenticated';
             }
 
+        },
+
+        async getUser({commit}) {
+            axios.get('/api/user')
+                .then(res => {
+                    commit('setUser', res.data);
+                    commit('setAuthenticated', true);
+                })
+                .catch(() => {
+                    commit('setUser', null);
+                    commit('setAuthenticated', false);
+                });
+        },
+
+        async logout({commit}) {
+            axios.post('/api/logout')
+                .then(res => {
+                    commit('setUser', null);
+                    commit('setAuthenticated', false);
+                })
+                .catch(() => {
+                    commit('setUser', null);
+                    commit('setAuthenticated', false);
+                });
         }
     }
 });
