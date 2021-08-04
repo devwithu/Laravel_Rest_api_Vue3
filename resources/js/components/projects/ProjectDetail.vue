@@ -3,12 +3,12 @@
         <div class="flex justify-between">
             <h1 class="text-2xl text-gray-700">Project Detail #{{ id }}</h1>
             <div>
-                <button @click="showFrom = true" class="bg-gray-500 rounded text-white px-3 py-2 hover:bg-gray-700">Edit Project</button>
+                <button @click="showForm = true" class="bg-gray-500 rounded text-white px-3 py-2 hover:bg-gray-700">Edit Project</button>
                 <button @click="deleteProject" class="bg-red-500 rounded text-white px-3 py-2 hover:bg-red-700">Delete Project</button>
             </div>
         </div>
 
-        <div class="flex justify-center" v-show="showFrom">
+        <div class="flex justify-center" v-show="showForm">
             <project-edit-form v-if="project.id > 0" @cancel-form="showForm = false" :project="project" @project-edited="fetchProject"></project-edit-form>
 
         </div>
@@ -65,7 +65,7 @@ export default {
     data() {
         return {
             project: [],
-            showFrom: false
+            showForm: false
         }
     },
     mounted() {
@@ -79,7 +79,7 @@ export default {
             });
         },
         fetchProject() {
-            this.showFrom = false;
+            this.showForm = false;
             axios.get('api/projects/' + this.id)
                 .then((res) =>{
                     this.project = res.data.data;
