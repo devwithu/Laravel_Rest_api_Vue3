@@ -9,10 +9,10 @@
                 </div>
                 <div class="w-2/3">
                     <input
-                        v-model="name"
+                        v-model="projectName"
                         id="name"
                         type="text"
-                           class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700"
+                        class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700"
 
                     >
                 </div>
@@ -31,7 +31,7 @@
                         class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white"
                         type="submit"
                     >
-                        Add
+                        Save
                     </button>
                     <button
                         @click="cancelForm"
@@ -48,10 +48,11 @@
 
 <script>
 export default {
-    name: "ProjectForm",
+    name: "ProjectEditForm",
+    props: ['project'],
     data() {
         return {
-            name: '',
+            projectName: this.project.name,
             errorMsg: '',
         }
     },
@@ -59,11 +60,11 @@ export default {
         async handleSunmit() {
 
             try {
-                const response = await axios.post('api/projects', {name: this.name});
+                const response = await axios.put('api/projects/' + this.project.id, {name: this.projectName});
                 if (response.data.status == 'OK') {
                     this.name = '';
                     this.errorMsg = '';
-                    this.$emit('project-added');
+                    this.$emit('project-edited');
                 }
             } catch (e) {
                 if (e.response.data.error.name[0].length > 0) {
@@ -72,7 +73,7 @@ export default {
             }
         },
         cancelForm() {
-            this.name = '';
+            this.projectName = '';
             this.errorMsg = '';
             this.$emit('cancel-form');
         }
